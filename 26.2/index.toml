@@ -1,6 +1,10 @@
 hash-format = "sha256"
 
 [[files]]
+file = "LICENSE.md"
+hash = "6216c6d0b55a76a15f89088461836ad37310a8b8bd44a35d8a19131f9836d0f6"
+
+[[files]]
 file = "config/crash_assistant/config.toml"
 hash = "259996eba4dcc6a2e56d5c9ef6169b2f1fb148345ad094a07ee850ee3c7aae77"
 
