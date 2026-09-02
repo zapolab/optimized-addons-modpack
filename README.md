@@ -52,7 +52,9 @@ the resulting `.zip` can be imported into any launcher that supports the Cursefo
 
 ```bash
 cd <mc-version>
-packwiz mr install <modrinth-slug>
+packwiz mr install <modrinth-slug> 
+# or
+packwiz cf install <curseforge-slug> 
 packwiz refresh
 ```
 
