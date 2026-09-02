@@ -441,6 +441,11 @@ hash = "58f1b88d724a30d10359c9ac9febdef6dabbcfec39bcee4476c1e65b7ace807d"
 metafile = true
 
 [[files]]
+file = "mods/xaeros-minimap.pw.toml"
+hash = "d547f22c378e1b2d3bf84ce4975c9d3b9f0626c8eafc9ea05b7167f18ebee3d2"
+metafile = true
+
+[[files]]
 file = "mods/yet_another_config_lib_v3.pw.toml"
 hash = "12f7929d34f36c9af034467f0ab94c1fd611c56a85389242fd1bca931efaf7cd"
 metafile = true
