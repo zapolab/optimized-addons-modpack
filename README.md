@@ -2,7 +2,7 @@
 
 A Minecraft modpack based on [Fabulously Optimized](https://modrinth.com/modpack/fabulously-optimized), with a quality-of-life addition on top.
 
-This is a small personal pack. It is **not affiliated with or endorsed by the Fabulously Optimized authors**.
+It is **not affiliated with or endorsed by the Fabulously Optimized authors**.
 
 ## What's in it
 
