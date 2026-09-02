@@ -6,25 +6,22 @@ This is a small personal pack. It is **not affiliated with or endorsed by the Fa
 
 ## What's in it
 
-Everything Fabulously Optimized ships — performance, rendering and visual improvements — plus:
+Everything Fabulously Optimized ships, plus:
 
-| Mod | What it does |
-| --- | --- |
-| [Inventory Profiles Next](https://modrinth.com/mod/inventory-profiles-next) | Sorting for inventories and chests, with hotkeys and per-container profiles |
-
-The mod loader and base pack version for each release are recorded in that release's `pack.toml`.
+- Inventory Profiles Next
+- Xaero's Minimap
 
 ## Supported versions
 
-Each Minecraft version lives in its own directory at the root of this repository, named after the Minecraft version it targets. Every directory is a self-contained packwiz pack and is published as a separate version on Modrinth.
+This modpack works on Minecraft Java Edition for these versions:
+
+- 26.2
 
 ## Installing
 
-The pack is distributed on Modrinth at [Modrinth project page](https://modrinth.com/modpack/optimized-addons).
+I'm currently working on publish this modpack on Modrinth and Curseforge.
 
-## Updating
-
-New versions are published on the same Modrinth project page. Most launchers can update an existing instance in place. Look for an update option in the instance settings.
+<!--## Updating-->
 
 ## Building from source
 
@@ -33,10 +30,23 @@ This repository holds the [packwiz](https://github.com/packwiz/packwiz) metadata
 ```bash
 cd <mc-version>
 packwiz refresh
+```
+
+then:
+
+```bash
 packwiz mr export
 ```
 
-The resulting `.mrpack` can be imported into any launcher that supports the Modrinth pack format.
+the resulting `.mrpack` can be imported into any launcher that supports the Modrinth pack format.
+
+Or:
+
+```bash
+packwiz cf export --side client
+```
+
+the resulting `.zip` can be imported into any launcher that supports the Curseforge pack format.
 
 ### Adding a mod
 
@@ -62,6 +72,6 @@ Individual mods are the property of their respective authors and are distributed
 
 ## License
 
-This repository is licensed under the WTFPL — see `LICENSE`.
+This repository is licensed under the CC0 Universal — see `LICENSE`.
 
 Exception: the Minecraft version directories are derived from Fabulously Optimized and remain under the BSD 3-Clause License. Each of them contains a `LICENSE.md` with the full text and copyright notice, which ships with every exported pack.
