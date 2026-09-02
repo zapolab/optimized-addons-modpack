@@ -25,28 +25,16 @@ I'm currently working on publish this modpack on Modrinth and Curseforge.
 
 ## Building from source
 
-This repository holds the [packwiz](https://github.com/packwiz/packwiz) metadata, not the mod files themselves. To build a pack yourself, enter the directory for the Minecraft version you want:
+This repository holds the [packwiz](https://github.com/packwiz/packwiz) metadata, not the mod files themselves. To build a pack yourself:
 
 ```bash
-cd <mc-version>
-packwiz refresh
+make build V=<mc-version>
 ```
 
-then:
+then, in the `<mc-version>/` folder, you will find:
 
-```bash
-packwiz mr export
-```
-
-the resulting `.mrpack` can be imported into any launcher that supports the Modrinth pack format.
-
-Or:
-
-```bash
-packwiz cf export --side client
-```
-
-the resulting `.zip` can be imported into any launcher that supports the Curseforge pack format.
+- the resulting `.mrpack` can be imported into any launcher that supports the Modrinth pack format.
+- the resulting `.zip` can be imported into any launcher that supports the Curseforge pack format.
 
 ### Adding a mod
 
