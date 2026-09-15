@@ -1,3 +1,5 @@
 *.mrpack
 *.zip
 .packwizcache/
+**/build/
+tools/__pycache__/
