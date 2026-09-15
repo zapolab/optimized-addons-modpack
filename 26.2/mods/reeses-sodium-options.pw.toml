@@ -11,3 +11,7 @@ hash = "2dbd97ca7013c6e88a475a55b828c50234c6060cc7a20843c9aadecdd561e1a690d7d0ba
 [update.modrinth]
 mod-id = "Bh37bMuy"
 version = "PH4SPorH"
+
+[update.curseforge]
+file-id = 8410907
+project-id = 511319

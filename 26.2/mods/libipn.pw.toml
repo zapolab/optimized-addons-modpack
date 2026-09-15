@@ -11,3 +11,7 @@ hash = "bd4bd3c3c3c4d98932fa526dc42cc7071bab3717849a3a1de808e6ef1ad3b2f3f24f2018
 [update.modrinth]
 mod-id = "onSQdWhM"
 version = "SkvWSBFK"
+
+[update.curseforge]
+file-id = 8608741
+project-id = 679177

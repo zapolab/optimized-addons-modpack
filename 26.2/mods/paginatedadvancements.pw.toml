@@ -11,3 +11,7 @@ hash = "593e7d3b30d8f76cc6c24e19b6ea3b0d22d8c558b9989275bdc4a8cd6dd8bd1bcc4fd680
 [update.modrinth]
 mod-id = "pJogNFap"
 version = "Ra3zz0eG"
+
+[update.curseforge]
+file-id = 8313272
+project-id = 618770

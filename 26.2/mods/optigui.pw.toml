@@ -11,3 +11,7 @@ hash = "42910eb6bbae735df370418c38f007a075cea79cdceb5c0d95a30c8be49d06938466ff10
 [update.modrinth]
 mod-id = "JuksLGBQ"
 version = "FC0X8ap5"
+
+[update.curseforge]
+file-id = 8342668
+project-id = 619986

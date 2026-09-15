@@ -11,3 +11,7 @@ hash = "bf709e5d1db2f104abb1e45d27dec39f10e0e2d546ec1e5df3a49b464c6f2b2daf39633e
 [update.modrinth]
 mod-id = "1eAoo2KR"
 version = "LlSShNCR"
+
+[update.curseforge]
+file-id = 8307149
+project-id = 667299

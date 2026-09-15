@@ -11,3 +11,7 @@ hash = "73ede5f2f9bfe86941615540357e4f40773cef4a76f850d158cf7895f9b67b93c7327566
 [update.modrinth]
 mod-id = "yBW8D80W"
 version = "LCAMVAqE"
+
+[update.curseforge]
+file-id = 8657351
+project-id = 393442

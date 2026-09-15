@@ -11,3 +11,7 @@ hash = "6642599a83e3238515677d1546df55b75e2cd09ab21dbc36bb7b3e73eb0af49e61e3de32
 [update.modrinth]
 mod-id = "orXAsira"
 version = "molTCsgf"
+
+[update.curseforge]
+file-id = 8265471
+project-id = 1291862
