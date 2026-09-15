@@ -4,24 +4,25 @@ SHELL       := bash
 PACKWIZ ?= packwiz
 PYTHON  ?= python3
 TOOLS   ?= tools
-OUT     ?= $(CURDIR)/build
 
-METAS = $(V)/mods/*.pw.toml $(V)/resourcepacks/*.pw.toml
+METAS   = $(wildcard $(V)/mods/*.pw.toml $(V)/resourcepacks/*.pw.toml)
+PACK    = $(shell grep -m1 '^version' $(V)/pack.toml 2>/dev/null | cut -d'"' -f2)
+OUT     = $(CURDIR)/$(V)/build
+MRPACK  = $(OUT)/$(V)-$(PACK).mrpack
+CFZIP   = $(OUT)/$(V)-$(PACK).zip
 
 .PHONY: build release version check-v check check-meta check-cf check-mr \
-        detect update clean push release-push
+        add link adopt sync update clean push release-push
 
 # --- guards ------------------------------------------------------------
 
 check-v:
 	@test -n "$(V)" || { echo "usage: make <target> V=<mc-version>"; exit 1; }
 	@test -f "$(V)/pack.toml" || { echo "no pack.toml in $(V)/"; exit 1; }
+	@test -n "$(PACK)" || { echo "no version in $(V)/pack.toml"; exit 1; }
+	@test -n "$(METAS)" || { echo "no metafiles in $(V)/"; exit 1; }
 
-# Every metafile must carry both providers. [update.curseforge] produces a
-# manifest entry in the CurseForge zip; without it the jar is bundled into
-# overrides/ and the upload is rejected. [update.modrinth] keeps the direct
-# CDN link in the .mrpack, since forgecdn is not on Modrinth's domain
-# allowlist.
+# Every metafile needs both providers.
 check-meta: check-v
 	@no_cf=$$(grep -L '^\[update\.curseforge\]' $(METAS) || true); \
 	no_mr=$$(grep -L '^\[update\.modrinth\]' $(METAS) || true); \
@@ -38,61 +39,78 @@ check-meta: check-v
 
 # --- metadata ----------------------------------------------------------
 
-# `detect` resolves CurseForge ids but rewrites the download source and
-# drops [update.modrinth]; restore-modrinth.py reapplies the committed
-# Modrinth metadata and keeps only the resolved ids.
-detect: check-v
-	cd $(V) && $(PACKWIZ) curseforge detect
-	$(PYTHON) $(TOOLS)/restore-modrinth.py $(V)
+# Adds a mod not yet in the pack. CF is the project URL.
+add: check-v
+	@test -n "$(MR)" -a -n "$(CF)" || { echo "usage: make add V=<mc-version> MR=<modrinth-slug> CF=<curseforge-url>"; exit 1; }
+	@test ! -f "$(V)/mods/$(MR).pw.toml" -a ! -f "$(V)/resourcepacks/$(MR).pw.toml" \
+		|| { echo "$(MR) is already in the pack; use: make link V=$(V) CF=<url> TARGET=$(MR)"; exit 1; }
+	cd $(V) && $(PACKWIZ) mr add "$(MR)"
+	$(PYTHON) $(TOOLS)/curseforge.py $(V) link "$(CF)"
 	cd $(V) && $(PACKWIZ) refresh
 	@$(MAKE) --no-print-directory check-meta V=$(V)
 
-# CurseForge file ids are version-specific, so they must be resolved again
-# after every dependency bump.
+# Copies project ids from another pack, matching metafile names.
+# Run sync afterwards to fill in the file ids.
+adopt: check-v
+	@test -n "$(FROM)" || { echo "usage: make adopt V=<mc-version> FROM=<source-version>"; exit 1; }
+	@test -f "$(FROM)/pack.toml" || { echo "no pack.toml in $(FROM)/"; exit 1; }
+	$(PYTHON) $(TOOLS)/curseforge.py $(V) adopt "$(FROM)"
+	cd $(V) && $(PACKWIZ) refresh
+
+# Links a mod already in the pack, leaving its version alone.
+link: check-v
+	@test -n "$(CF)" || { echo "usage: make link V=<mc-version> CF=<curseforge-url> [TARGET=<metafile>]"; exit 1; }
+	$(PYTHON) $(TOOLS)/curseforge.py $(V) link "$(CF)" $(if $(TARGET),--target "$(TARGET)")
+	cd $(V) && $(PACKWIZ) refresh
+	@$(MAKE) --no-print-directory check-meta V=$(V)
+
+sync: check-v
+	$(PYTHON) $(TOOLS)/curseforge.py $(V) sync
+	cd $(V) && $(PACKWIZ) refresh
+	@$(MAKE) --no-print-directory check-meta V=$(V)
+
 update: check-v
 	cd $(V) && $(PACKWIZ) update --all
-	@$(MAKE) --no-print-directory detect V=$(V)
+	@$(MAKE) --no-print-directory sync V=$(V)
 
 # --- build -------------------------------------------------------------
 
 build: check-v check-meta
 	@mkdir -p $(OUT)
 	cd $(V) && $(PACKWIZ) refresh
-	cd $(V) && $(PACKWIZ) mr export -o "$(OUT)/$(V).mrpack"
-	cd $(V) && $(PACKWIZ) cf export -o "$(OUT)/$(V).zip"
+	cd $(V) && $(PACKWIZ) mr export -o "$(MRPACK)"
+	cd $(V) && $(PACKWIZ) cf export -o "$(CFZIP)"
 	@$(MAKE) --no-print-directory check V=$(V)
 
 check: check-cf check-mr
 
-# Mirrors the CurseForge upload validator, which rejects archives shipping
-# jars that belong to CurseForge-hosted projects.
-check-cf:
-	@test -f "$(OUT)/$(V).zip" || { echo "$(OUT)/$(V).zip not found, run make build"; exit 1; }
-	@bundled=$$(unzip -Z1 "$(OUT)/$(V).zip" | grep -E '^overrides/(mods|resourcepacks)/' || true); \
+# No jars in overrides/: CurseForge rejects the upload.
+check-cf: check-v
+	@test -f "$(CFZIP)" || { echo "$(notdir $(CFZIP)) not found, run make build"; exit 1; }
+	@bundled=$$(unzip -Z1 "$(CFZIP)" | grep -E '^overrides/(mods|resourcepacks)/' || true); \
 	if [ -n "$$bundled" ]; then \
-		echo "$(V).zip: $$(echo "$$bundled" | wc -l) bundled files, upload would be rejected"; \
+		echo "$(notdir $(CFZIP)): $$(echo "$$bundled" | wc -l) bundled files, upload would be rejected"; \
 		echo "$$bundled" | sed 's/^/  /'; \
 		exit 1; \
 	fi
-	@echo "$(V).zip: no bundled files"
+	@echo "$(notdir $(CFZIP)): no bundled files"
 
-# The index must list one direct download per metafile; a shortfall means
-# some mods fell back to overrides/.
-check-mr:
-	@test -f "$(OUT)/$(V).mrpack" || { echo "$(OUT)/$(V).mrpack not found, run make build"; exit 1; }
-	@bundled=$$(unzip -Z1 "$(OUT)/$(V).mrpack" | grep -E '^overrides/(mods|resourcepacks)/' || true); \
+# One indexed download per metafile.
+check-mr: check-v
+	@test -f "$(MRPACK)" || { echo "$(notdir $(MRPACK)) not found, run make build"; exit 1; }
+	@bundled=$$(unzip -Z1 "$(MRPACK)" | grep -E '^overrides/(mods|resourcepacks)/' || true); \
 	if [ -n "$$bundled" ]; then \
-		echo "$(V).mrpack: $$(echo "$$bundled" | wc -l) bundled files"; \
+		echo "$(notdir $(MRPACK)): $$(echo "$$bundled" | wc -l) bundled files"; \
 		echo "$$bundled" | sed 's/^/  /'; \
 		exit 1; \
 	fi
 	@expected=$$(ls $(METAS) | wc -l); \
-	indexed=$$(unzip -p "$(OUT)/$(V).mrpack" modrinth.index.json \
+	indexed=$$(unzip -p "$(MRPACK)" modrinth.index.json \
 		| $(PYTHON) -c 'import json,sys; print(len(json.load(sys.stdin)["files"]))'); \
-	echo "$(V).mrpack: $$indexed/$$expected indexed downloads"; \
+	echo "$(notdir $(MRPACK)): $$indexed/$$expected indexed downloads"; \
 	test "$$indexed" -eq "$$expected"
 
-clean:
+clean: check-v
 	rm -rf $(OUT)
 
 # --- release -----------------------------------------------------------
