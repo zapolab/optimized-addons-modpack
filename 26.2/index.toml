@@ -461,10 +461,6 @@ hash = "6d8ca95f4519e02ab8f13da709abf44840746359c474af5bbac1a07782251b6b"
 metafile = true
 
 [[files]]
-file = "resourcepacks/Mod Menu Helper.zip"
-hash = "f92dd2754a699eb8732cfc9ca02d95039c29c089e8ae3e5fc4bcd9d0f3176333"
-
-[[files]]
 file = "resourcepacks/Translations_for_Sodium.pw.toml"
 hash = "c3c4f6550850d00502269ac2dd056236d1ad500125011c6bcbb01a26452c956c"
 metafile = true
