@@ -19,40 +19,77 @@ This modpack works on Minecraft Java Edition for these versions:
 
 ## Installing
 
-I'm currently working on publish this modpack on Modrinth and Curseforge.
+I'm currently working on publishing this modpack on Modrinth and CurseForge.
 
 <!--## Updating-->
 
 ## Building from source
 
-This repository holds the [packwiz](https://github.com/packwiz/packwiz) metadata, not the mod files themselves. To build a pack yourself:
+This repository holds the [packwiz](https://github.com/packwiz/packwiz) metadata, not the mod files themselves.
+
+Requirements: `packwiz`, `make`, `unzip`, and Python 3.11 or later.
 
 ```bash
 make build V=<mc-version>
 ```
 
-then, in the `<mc-version>/` folder, you will find:
+Artifacts land in `<mc-version>/build/`, named `<mc-version>-<pack-version>`:
 
-- the resulting `.mrpack` can be imported into any launcher that supports the Modrinth pack format.
-- the resulting `.zip` can be imported into any launcher that supports the Curseforge pack format.
+- the `.mrpack` imports into any launcher supporting the Modrinth pack format
+- the `.zip` imports into any launcher supporting the CurseForge pack format
 
-### Adding a mod
+`build` also runs `make check`, which verifies that no mod was bundled as a raw jar and that every metafile has a matching entry in both archives.
 
-```bash
-cd <mc-version>
-packwiz mr install <modrinth-slug> 
-# or
-packwiz cf install <curseforge-slug> 
-packwiz refresh
-```
+## Working on the pack
+
+Every metafile carries two providers: `[update.modrinth]`, written by packwiz,
+and `[update.curseforge]`, maintained by `tools/curseforge.py` through
+[CFWidget](https://www.cfwidget.com/). The Makefile targets keep the two in
+step, so prefer them over raw `packwiz` commands.
 
 ### Updating mods
 
 ```bash
-cd <mc-version>
-packwiz update --all      # or: packwiz update <mod>
-packwiz refresh
+make update V=<mc-version>
 ```
+
+Updates every mod and realigns the CurseForge file ids. Use `make sync V=<mc-version>` to realign the ids on their own, after reverting a mod by hand.
+
+### Adding a mod
+
+```bash
+make add V=<mc-version> MR=<modrinth-slug> CF=<curseforge-project-url or curseforge-slug>
+```
+
+The CurseForge slug often differs from the Modrinth one.
+
+### Linking an existing mod
+
+```bash
+make link V=<mc-version> CF=<curseforge-project-url> [TARGET=<metafile>]
+```
+
+Attaches CurseForge metadata to a mod already in the pack, leaving its version alone. `TARGET` is the metafile name without the extension, needed only when more than one mod is unlinked.
+
+Do not use `make add` for this: `packwiz mr add` would bump the mod to its
+latest version.
+
+### Starting a new Minecraft version
+
+```bash
+make adopt V=<new-version> FROM=<existing-version>
+make sync V=<new-version>
+```
+
+`adopt` copies the CurseForge project ids from metafiles of the same name, then `sync` resolves the file ids. Mods with no counterpart in the source pack are listed and need `make link`.
+
+### Releasing
+
+```bash
+make release-push V=<mc-version> TAG=<x.y.z>
+```
+
+Writes the tag into `pack.toml`, builds, commits, tags, and pushes. Requires a clean working tree.
 
 ## Credits
 
