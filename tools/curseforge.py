@@ -35,6 +35,8 @@ API_BASE = "https://api.cfwidget.com"
 DEFAULT_CLASS = "minecraft/mc-mods"
 SUBDIRS = ("mods", "resourcepacks")
 SECTION = "[update.curseforge]"
+LOADERS = {"fabric": "Fabric", "neoforge": "NeoForge",
+           "forge": "Forge", "quilt": "Quilt"}
 USER_AGENT = "packwiz-curseforge-sync/2.0"
 FILE_ID_RE = re.compile(r"^file-id\s*=\s*\d+\s*$", re.MULTILINE)
 
@@ -113,12 +115,36 @@ def normalise(filename: str) -> str:
     return filename.replace("+", " ").casefold()
 
 
-def find_file_id(project: dict, filename: str) -> int | None:
-    target = normalise(filename)
-    for entry in project.get("files", []):
-        if normalise(str(entry.get("name", ""))) == target:
-            return int(entry["id"])
+def pack_loader(pack_dir: Path) -> str | None:
+    """Return the loader tag CurseForge uses for this pack."""
+    versions = tomllib.loads(
+        (pack_dir / "pack.toml").read_text(encoding="utf-8")).get("versions", {})
+    for key in versions:
+        if key in LOADERS:
+            return LOADERS[key]
     return None
+
+
+def find_file_ids(project: dict, filename: str,
+                  loader: str | None = None) -> list[int]:
+    """Return every file id matching the filename, narrowed by loader."""
+    target = normalise(filename)
+    matches = [entry for entry in project.get("files", [])
+               if normalise(str(entry.get("name", ""))) == target]
+
+    if loader is not None and len(matches) > 1:
+        tagged = [entry for entry in matches
+                  if loader in entry.get("versions", [])
+                  or not (set(entry.get("versions", [])) & set(LOADERS.values()))]
+        if tagged:
+            matches = tagged
+
+    return [int(entry["id"]) for entry in matches]
+
+
+def summarise(ids: list[int], limit: int = 4) -> str:
+    shown = ", ".join(str(i) for i in ids[:limit])
+    return shown if len(ids) <= limit else f"{shown}, +{len(ids) - limit} more"
 
 
 def project_path(reference: str) -> str:
@@ -166,6 +192,7 @@ def run_sync(client: CFWidget, pack_dir: Path, check: bool, jobs: int) -> int:
     updated: list[str] = []
     current: list[str] = []
     unlinked: list[str] = []
+    ambiguous: list[str] = []
     failed: list[tuple[str, str]] = []
 
     pending: list[tuple[Path, str, str, str]] = []
@@ -184,6 +211,7 @@ def run_sync(client: CFWidget, pack_dir: Path, check: bool, jobs: int) -> int:
 
         pending.append((path, text, str(project_id), filename))
 
+    loader = pack_loader(pack_dir)
     projects = client.projects(sorted({p for _, _, p, _ in pending}), jobs)
 
     for path, text, project_id, filename in pending:
@@ -194,12 +222,23 @@ def run_sync(client: CFWidget, pack_dir: Path, check: bool, jobs: int) -> int:
                            f"lookup failed for {project_id}: {project}"))
             continue
 
-        file_id = find_file_id(project, filename)
-        if file_id is None:
+        candidates = find_file_ids(project, filename, loader)
+        old_file_id = curseforge_block(tomllib.loads(text)).get("file-id")
+
+        if not candidates:
             failed.append((path.as_posix(), f"no CurseForge file named {filename}"))
             continue
 
-        old_file_id = curseforge_block(tomllib.loads(text)).get("file-id")
+        if len(candidates) > 1:
+            if old_file_id in candidates:
+                ambiguous.append(path.as_posix())
+                continue
+            failed.append((path.as_posix(),
+                           f"several files named {filename} "
+                           f"({summarise(candidates)}), pick one by hand"))
+            continue
+
+        file_id = candidates[0]
         if file_id == old_file_id:
             current.append(path.as_posix())
             continue
@@ -213,12 +252,19 @@ def run_sync(client: CFWidget, pack_dir: Path, check: bool, jobs: int) -> int:
 
     verb = "stale" if check else "updated"
     print(f"{verb}: {len(updated)}  current: {len(current)}  "
-          f"unlinked: {len(unlinked)}  failed: {len(failed)}")
+          f"ambiguous: {len(ambiguous)}  unlinked: {len(unlinked)}  "
+          f"failed: {len(failed)}")
 
     if updated:
         print()
         for line in updated:
             print(f"  {line}")
+
+    if ambiguous:
+        print("\nsame filename across releases, kept the recorded id; "
+              "recheck after updating these:")
+        for rel in ambiguous:
+            print(f"  {rel}")
 
     if unlinked:
         print("\nno CurseForge metadata, run `make link` for these:")
@@ -282,13 +328,16 @@ def run_link(client: CFWidget, pack_dir: Path,
         print(f"error: {chosen} has no filename field", file=sys.stderr)
         return 1
 
-    file_id = find_file_id(project, filename)
-    if file_id is None:
-        print(f"error: project {path} has no file named {filename}",
-              file=sys.stderr)
-        print("the platforms may ship different builds; check the file list "
-              "on CurseForge", file=sys.stderr)
+    candidates = find_file_ids(project, filename, pack_loader(pack_dir))
+    if not candidates:
+        print(f"error: no CurseForge file named {filename}", file=sys.stderr)
         return 1
+    if len(candidates) > 1:
+        print(f"error: several files named {filename} "
+              f"({summarise(candidates)}), pick one by hand", file=sys.stderr)
+        return 1
+
+    file_id = candidates[0]
 
     base, _ = split_section(text, SECTION)
     chosen.write_text(
