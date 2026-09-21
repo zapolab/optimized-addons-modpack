@@ -124,7 +124,7 @@ release: check-v
 	sed -i 's/^version = .*/version = "$(TAG)"/' $(V)/pack.toml
 	$(MAKE) build V=$(V)
 	git add $(V)/pack.toml $(V)/index.toml $(V)/mods $(V)/resourcepacks
-	git commit -m "build: $(V) release $(TAG)"
+	git commit -m --allow-empty "build: $(V) release $(TAG)"
 	git tag -a "$(V)-$(TAG)" -m "$(V) $(TAG)"
 	@echo "artifacts in $(OUT)/"
 
