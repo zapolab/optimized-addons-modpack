@@ -206,6 +206,11 @@ hash = "43950b41899eef59596317dc979171bf7e8407e26b0dbf15d3e243b61c7f11c2"
 metafile = true
 
 [[files]]
+file = "mods/appleskin.pw.toml"
+hash = "a84a833546b7125e2cb2b4c2059969b447bdb2d353508853c1bec622f01bb7c2"
+metafile = true
+
+[[files]]
 file = "mods/betterblockentities.pw.toml"
 hash = "ab413e4d769500a03bcc3a508ee260e78a8c2029583011cca63cdfc35168fec1"
 metafile = true
@@ -223,6 +228,11 @@ metafile = true
 [[files]]
 file = "mods/cape-provider.pw.toml"
 hash = "9352ad1b5e146b0964d14a3c921682cdb0a294d8e5bcebed3ef98153591a70bf"
+metafile = true
+
+[[files]]
+file = "mods/clientsort.pw.toml"
+hash = "da46fe075387dd5d225065c006c55103f68db6651f8a65da3b08c540a5825953"
 metafile = true
 
 [[files]]
@@ -271,6 +281,11 @@ hash = "17e1cc858bbacfe5db0cd2083338e2a8ea5a5fd9f6ce31e79058b9e6e9f91b82"
 metafile = true
 
 [[files]]
+file = "mods/enchantment-descriptions.pw.toml"
+hash = "0adb1d9490c381b56c97e9a14eb65278e9ad4b7d6ccd60805d5026e7071c5dce"
+metafile = true
+
+[[files]]
 file = "mods/entity_model_features.pw.toml"
 hash = "b07dea65e148fb3f5a5926ac0844b770355874ead2a7a220ab46d8be3f3d2f54"
 metafile = true
@@ -313,11 +328,6 @@ metafile = true
 [[files]]
 file = "mods/immediatelyfast.pw.toml"
 hash = "60079e4f6a86099c7f767d1c2c7cd113b994e8988d589de6b27c27d9ed9c467f"
-metafile = true
-
-[[files]]
-file = "mods/inventory-profiles-next.pw.toml"
-hash = "434fd21cab26b01e3c5356d6212204463ec11cd97a6f5ef55b90a569237063a8"
 metafile = true
 
 [[files]]
@@ -403,6 +413,11 @@ metafile = true
 [[files]]
 file = "mods/polytone.pw.toml"
 hash = "860674d16208f187dd77cdae526b2115f8be6798b82cf4027ba0fac248341505"
+metafile = true
+
+[[files]]
+file = "mods/prickle.pw.toml"
+hash = "3387c4fd31dd5db42a2b5e67a52254608d4b208b821dd57e68aa58fa170def16"
 metafile = true
 
 [[files]]

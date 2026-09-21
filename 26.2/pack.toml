@@ -1,12 +1,12 @@
 name = "Optimized Addons"
 author = "zapolab"
-version = "1.2.0"
+version = "1.3.0"
 pack-format = "packwiz:1.1.0"
 
 [index]
 file = "index.toml"
 hash-format = "sha256"
-hash = "b7d9a978bb2ab5426ba760f1c78752e35985f3f41c4a3001bbb58417fb661542"
+hash = "2a7eb45a9ef8832131c48fc69966f08709fe7cee4b3ed8e68a706af6baa69800"
 
 [versions]
 fabric = "0.19.3"
