@@ -22,7 +22,7 @@ This modpack works on Minecraft Java Edition for these versions:
 
 ## Installing
 
-This modpack is available on [Curseforge](https://www.curseforge.com/minecraft/modpacks/optimized-addons).
+This modpack is available on [Curseforge](https://www.curseforge.com/minecraft/modpacks/optimized-addons).  
 Also, I'm currently working on publishing this modpack on Modrinth.
 
 If you prefer you can download the latest release file (`.zip` or `.mrpack`) from this repo page.
