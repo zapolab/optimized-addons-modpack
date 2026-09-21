@@ -10,6 +10,10 @@ Everything Fabulously Optimized ships, plus:
 
 - Inventory Profiles Next
 - Xaero's Minimap
+- AppleSkin
+- Enchantment Descriptions
+- Prickle
+- Client Sort
 
 ## Supported versions
 
