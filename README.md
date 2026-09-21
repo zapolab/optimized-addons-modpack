@@ -8,7 +8,6 @@ It is **not affiliated with or endorsed by the Fabulously Optimized authors**.
 
 Everything Fabulously Optimized ships, plus:
 
-- Inventory Profiles Next
 - Xaero's Minimap
 - AppleSkin
 - Enchantment Descriptions
