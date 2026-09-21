@@ -22,7 +22,10 @@ This modpack works on Minecraft Java Edition for these versions:
 
 ## Installing
 
-I'm currently working on publishing this modpack on Modrinth and CurseForge.
+This modpack is available on [Curseforge](https://www.curseforge.com/minecraft/modpacks/optimized-addons).
+Also, I'm currently working on publishing this modpack on Modrinth.
+
+If you prefer you can download the latest release file (`.zip` or `.mrpack`) from this repo page.
 
 <!--## Updating-->
 
@@ -98,7 +101,7 @@ Writes the tag into `pack.toml`, builds, commits, tags, and pushes. Requires a c
 
 The pack configuration is derived from [Fabulously Optimized](https://github.com/Fabulously-Optimized/fabulously-optimized). Copyright 2020-2026 Fabulously Optimized Authors. The name "Fabulously Optimized" and the names of its contributors are not used to endorse or promote this pack.
 
-Individual mods are the property of their respective authors and are distributed under their own licenses. No mod files are stored in this repository; they are downloaded from Modrinth at install time.
+Individual mods are the property of their respective authors and are distributed under their own licenses. No mod files are stored in this repository.
 
 ## License
 
